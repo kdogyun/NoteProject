@@ -1,7 +1,6 @@
 package com.journaldev.navigationviewexpandablelistview;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -16,6 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.ExpandableListView;
+
+import com.journaldev.navigationviewexpandablelistview.Adapter.ExpandableListAdapter;
+import com.journaldev.navigationviewexpandablelistview.Model.MenuModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

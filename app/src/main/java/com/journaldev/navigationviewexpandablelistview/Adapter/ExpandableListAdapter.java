@@ -1,13 +1,15 @@
-package com.journaldev.navigationviewexpandablelistview;
+package com.journaldev.navigationviewexpandablelistview.Adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+
+import com.journaldev.navigationviewexpandablelistview.Model.MenuModel;
+import com.journaldev.navigationviewexpandablelistview.R;
 
 import java.util.HashMap;
 import java.util.List;

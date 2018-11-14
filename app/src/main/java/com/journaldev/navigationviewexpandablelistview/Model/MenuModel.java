@@ -1,4 +1,4 @@
-package com.journaldev.navigationviewexpandablelistview;
+package com.journaldev.navigationviewexpandablelistview.Model;
 
 /**
  * Created by anupamchugh on 22/12/17.
