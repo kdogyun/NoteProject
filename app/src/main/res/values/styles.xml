@@ -2,10 +2,10 @@
     <!-- the theme applied to the application or activity -->
     <style name="CustomActionBarTheme"
         parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/colorWhite</item>
-        <item name="colorPrimaryDark">@color/colorWhite</item>
+        <item name="colorPrimary">@color/colorFloating</item>
+        <item name="colorPrimaryDark">@color/colorFloating</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="titleTextColor">#393939</item>
+        <item name="titleTextColor">@color/colorWhite</item>
     </style>
 
     <style name="CustomActionBarTheme.NoActionBar">
