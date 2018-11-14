@@ -7,4 +7,5 @@
     <color name="colorDelete">#ee6f6f</color>
     <color name="colorFloating">#20b3ff</color>
     <color name="colorStatus">#434343</color>
+    <color name="colorTag">#20b3ff</color>
 </resources>

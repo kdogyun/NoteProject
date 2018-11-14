@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/colorWhite</item>
         <item name="colorPrimaryDark">@color/colorWhite</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="titleTextColor">#393939</item>
     </style>
 
     <style name="CustomActionBarTheme.NoActionBar">
