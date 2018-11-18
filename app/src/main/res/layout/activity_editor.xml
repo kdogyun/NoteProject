@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:background="#FFFFFF">
 
     <RelativeLayout
         android:id="@+id/layout_title"
@@ -61,17 +61,38 @@
             android:layout_centerVertical="true" >
 
             <RadioButton
-                android:id="@+id/radioButton"
+                android:id="@+id/sunny"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="16dp"
-                android:button="@drawable/radio_button_like" />
+                android:button="@drawable/radio_button_sunny" />
 
             <RadioButton
-                android:id="@+id/radioButton1"
+                android:id="@+id/sun_cloudy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@drawable/radio_button_like" />
+                android:layout_marginRight="16dp"
+                android:button="@drawable/radio_button_sun_cloudy" />
+
+            <RadioButton
+                android:id="@+id/cloudy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:button="@drawable/radio_button_cloudy" />
+
+            <RadioButton
+                android:id="@+id/rainy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:button="@drawable/radio_button_rainy" />
+
+            <RadioButton
+                android:id="@+id/snowy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/radio_button_snowy" />
         </RadioGroup>
 
     </RelativeLayout>

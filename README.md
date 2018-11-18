@@ -7,6 +7,7 @@
 3. add Swipe Recycler View
 4. add Search Action in Tool bar(Action bar)
 5. add Editor(Web View) and Editor Recycler View     // 2018-11-14
+6. add Design image //  2018-11-18
 
 #### Reference
 
