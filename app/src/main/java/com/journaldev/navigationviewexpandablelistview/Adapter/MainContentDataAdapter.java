@@ -1,43 +1,82 @@
 package com.journaldev.navigationviewexpandablelistview.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.journaldev.navigationviewexpandablelistview.EditorActivity;
 import com.journaldev.navigationviewexpandablelistview.MainActivity;
 import com.journaldev.navigationviewexpandablelistview.Model.MainContent;
 import com.journaldev.navigationviewexpandablelistview.R;
 
 import java.util.List;
 
+import jp.wasabeef.richeditor.RichEditor;
+
 public class MainContentDataAdapter extends RecyclerView.Adapter<MainContentDataAdapter.MainContentViewHolder> {
 
     private LayoutInflater inflater;
     public List<MainContent> contents;
+    private int previousPosition = 0;
+    private Context context;
+    private RecyclerView recyclerView;
+
+    int check = 0;
 
     public class MainContentViewHolder extends RecyclerView.ViewHolder {
-        private TextView title, content, tag;
+        private TextView title, summary, tag;
         private ImageView weather, image, bookmark;
+        private CardView contentMain = null;
 
         public MainContentViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.row_title);
-            content = (TextView) view.findViewById(R.id.row_content);
+            summary = (TextView) view.findViewById(R.id.row_content);
             tag = (TextView) view.findViewById(R.id.row_tag);
             weather = (ImageView) view.findViewById(R.id.row_weather);
             image = (ImageView) view.findViewById(R.id.row_image);
             bookmark = (ImageView) view.findViewById(R.id.row_bookmark);
+            contentMain = (CardView) itemView.findViewById(R.id.content_main);
+            contentMain.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    View view = null;
+
+                    if (getAdapterPosition() == previousPosition) {
+                        if(check == 0) {
+                            //웹뷰가 선택된 곳의 행동처리 (이전과 같은 곳을 클릭할 경우)
+                            String date = contents.get(recyclerView.findViewHolderForAdapterPosition(previousPosition).getAdapterPosition()).getDate();
+                            Intent intent = new Intent(context, EditorActivity.class);
+                            intent.putExtra("db", "1");
+                            intent.putExtra("date", date);
+                            context.startActivity(intent);
+                            previousPosition = getAdapterPosition();
+                            check++;
+                        } else {
+                            check = 0;
+                        }
+                    } else {
+                        previousPosition = getAdapterPosition();
+                    }
+                    return false;
+                }
+            });
         }
     }
 
-    public MainContentDataAdapter(Context context, List<MainContent> contents) {
+    public MainContentDataAdapter(Context context, List<MainContent> contents, RecyclerView recyclerView) {
+        this.context = context;
         inflater = LayoutInflater.from(context);
         this.contents = contents;
+        this.recyclerView = recyclerView;
     }
 
     public void removeItem(int position) {
@@ -63,7 +102,7 @@ public class MainContentDataAdapter extends RecyclerView.Adapter<MainContentData
     public void onBindViewHolder(MainContentViewHolder holder, int position) {
         MainContent content = contents.get(position);
         holder.title.setText(content.getTitle());
-        holder.content.setText(content.getContent());
+        holder.summary.setText(content.getSummary());
         holder.tag.setText(content.getTag());
         holder.weather.setImageURI(Uri.parse(content.getWeather()));
         holder.image.setImageURI(Uri.parse(content.getImage()));

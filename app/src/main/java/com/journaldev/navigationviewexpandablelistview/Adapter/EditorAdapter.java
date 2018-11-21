@@ -3,24 +3,25 @@ package com.journaldev.navigationviewexpandablelistview.Adapter;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 
+import com.journaldev.navigationviewexpandablelistview.Model.EditorModel;
 import com.journaldev.navigationviewexpandablelistview.R;
 
 import java.util.ArrayList;
 
 import jp.wasabeef.richeditor.RichEditor;
 
+
 public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    private ArrayList<String> mDataset;
-    private ArrayList<String> mTypeset;
+    private ArrayList<EditorModel> mDataset;
     private HorizontalScrollView mMenuView=null;
+    private ArrayList<RichEditor> editorSet;
 
     private RichEditor mEditor;
 
@@ -28,16 +29,16 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public int getItemViewType(int position) {
         // Just as an example, return 0 or 2 depending on position
         // Note that unlike in ListView adapters, types don't have to be contiguous
-        return Integer.parseInt(mTypeset.get(position));
+        return mDataset.get(position).getType();
     }
 
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public EditorAdapter(HorizontalScrollView mMenuView , RecyclerView mRecyclerList, ArrayList<String> myDataset, ArrayList<String> myTypeset) {
+    public EditorAdapter(HorizontalScrollView mMenuView , RecyclerView mRecyclerList, ArrayList<EditorModel> myDataset, ArrayList<RichEditor> editorSet) {
         this.mMenuView = mMenuView;
         this.mRecyclerList = mRecyclerList;
-        mDataset = myDataset;
-        mTypeset = myTypeset;
+        this.mDataset = myDataset;
+        this.editorSet = editorSet;
     }
 
     // Create new views (invoked by the layout manager)
@@ -61,37 +62,30 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case 1:
-                mEditor.setHtml(mDataset.get(position) + "\n\n");
-                if(position != 0){
-                    View view = mRecyclerList.findViewHolderForAdapterPosition(position-1).itemView;
-                    RichEditor editor = (RichEditor) view.findViewById(R.id.editor);
+                mEditor.setHtml(mDataset.get(position).getContent());
+                buttonSetting(mMenuView);
+
+                if(position>=2) {
+                    RichEditor editor = (RichEditor) mRecyclerList.findViewHolderForAdapterPosition(position - 1).itemView.findViewById(R.id.editor);
                     editor.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT; // LayoutParams: android.view.ViewGroup.LayoutParams
                     // wv.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                     editor.requestLayout();//It is necesary to refresh the screen
-                    //LayoutParams params = layout.getLayoutParams();
-                    //buttonSetting(view);
-
-                    buttonSetting(mMenuView);
                 }
                 break;
             case 2:
-                String imagePath = mDataset.get(position);
-
+                String imagePath = mDataset.get(position).getContent();
                 String html = "<html><head></head><body> <img src=\""+ imagePath + "\" width=\""+ mEditor.getLayoutParams().width +"\" height=\"350\"> </body></html>";
                 mEditor.loadDataWithBaseURL("", html, "text/html","utf-8", "");
                 mEditor.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT; // LayoutParams: android.view.ViewGroup.LayoutParams
                 // wv.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                 mEditor.requestLayout();//It is necesary to refresh the screen
-                if(position != 0){
-                    View view = mRecyclerList.findViewHolderForAdapterPosition(position-1).itemView;
-                    RichEditor editor = (RichEditor) view.findViewById(R.id.editor);
+                buttonSetting(mMenuView);
+
+                if(position>=2) {
+                    RichEditor editor = (RichEditor) mRecyclerList.findViewHolderForAdapterPosition(position - 1).itemView.findViewById(R.id.editor);
                     editor.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT; // LayoutParams: android.view.ViewGroup.LayoutParams
                     // wv.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                     editor.requestLayout();//It is necesary to refresh the screen
-                    //LayoutParams params = layout.getLayoutParams();
-                    //buttonSetting(view);
-
-                    buttonSetting(mMenuView);
                 }
                 break;
         }
@@ -121,6 +115,8 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             mEditor = (RichEditor) itemView.findViewById(R.id.editor);
             editor = (RichEditor) itemView.findViewById(R.id.editor);
 
+            editorSet.add(mEditor);
+
             editor.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -140,12 +136,12 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     } else {
                         //웹뷰가 선택되지 않은 곳의 행동처리
                         //view = mRecyclerList.findViewHolderForAdapterPosition(previousPosition).itemView;
-                        //mEditor = (RichEditor) view.findViewById(R.id.editor);
+                        //mEditor = (RTextEditorView) view.findViewById(R.id.editor);
                         //mEditor.setBackgroundColor(Color.WHITE);
 
                         //웹뷰가 선택된 곳의 행동처리 (이전과 다른 곳을 클릭할 경우)
                         //view = mRecyclerList.findViewHolderForAdapterPosition(getAdapterPosition()).itemView;
-                        //mEditor = (RichEditor) view.findViewById(R.id.editor);
+                        //mEditor = (RTextEditorView) view.findViewById(R.id.editor);
                         //mEditor.setBackgroundColor(Color.GREEN);
                         previousPosition = getAdapterPosition();
                     }
@@ -162,6 +158,8 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             mEditor = (RichEditor) itemView.findViewById(R.id.editor);
             editor = (RichEditor) itemView.findViewById(R.id.editor);
 
+            editorSet.add(mEditor);
+
             editor.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -181,12 +179,12 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     } else {
                         //웹뷰가 선택되지 않은 곳의 행동처리
                         //view = mRecyclerList.findViewHolderForAdapterPosition(previousPosition).itemView;
-                        //mEditor = (RichEditor) view.findViewById(R.id.editor);
+                        //mEditor = (RTextEditorView) view.findViewById(R.id.editor);
                         //mEditor.setBackgroundColor(Color.WHITE);
 
                         //웹뷰가 선택된 곳의 행동처리 (이전과 다른 곳을 클릭할 경우)
                         //view = mRecyclerList.findViewHolderForAdapterPosition(getAdapterPosition()).itemView;
-                        //mEditor = (RichEditor) view.findViewById(R.id.editor);
+                        //mEditor = (RTextEditorView) view.findViewById(R.id.editor);
                         //mEditor.setBackgroundColor(Color.GREEN);
                         previousPosition = getAdapterPosition();
                     }
@@ -361,27 +359,27 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         view.findViewById(R.id.action_insert_bullets).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.setBullets();
+                //mEditor.setBullets();
             }
         });
 
         view.findViewById(R.id.action_insert_numbers).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.setNumbers();
+                //mEditor.setNumbers();
             }
         });
 
         view.findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.insertLink("https://github.com/wasabeef", "wasabeef");
+                //mEditor.insertLink("https://github.com/wasabeef", "wasabeef");
             }
         });
         view.findViewById(R.id.action_insert_checkbox).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEditor.insertTodo();
+                //mEditor.insertTodo();
             }
         });
     }

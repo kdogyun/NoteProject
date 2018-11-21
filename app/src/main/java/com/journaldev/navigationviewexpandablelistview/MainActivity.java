@@ -53,8 +53,10 @@ public class MainActivity extends AppCompatActivity
     public static Drawable onBookMark, offBookMark;
     private MainContentDataAdapter mAdapter;
     private RecyclerView recyclerView;
-    List<MainContent> mainList = new ArrayList<>();
+    ArrayList<MainContent> mainList = new ArrayList<>();
     SwipeController swipeController = null;
+
+    public static DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +82,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                //        .setAction("Action", null).show();
                 Intent intent = new Intent(getApplicationContext(), EditorActivity.class);
+                intent.putExtra("db","0");
                 startActivity(intent);
             }
         });
@@ -105,17 +108,19 @@ public class MainActivity extends AppCompatActivity
         onBookMark = getResources().getDrawable(R.drawable.ic_booskmark_blue_32);
 
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
-        MainContent mainContent = new MainContent();
-        mainContent.setContent("오늘은 내 생일이다. 정말 많은 친..");
-        mainContent.setBookMark(1);
-        mainContent.setDate("2018년 12월 29일 (토)");
-        mainContent.setImage("android.resource://" + getPackageName() + "/drawable/my_sign");
-        mainContent.setTag("#일기 #일상");
-        mainContent.setTitle("나의 생일날");
-        mainContent.setWeather("android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24");
-        mainList.add(mainContent);
 
-        mAdapter = new MainContentDataAdapter(this,mainList);
+        dbHelper = new DBHelper(this, "Note.db", null, 1);
+        /*
+        dbHelper.insert_main("2018년 12월 29일 (토)", "나의 생일날", "오늘은 내 생일이다. 정말 많은 친..",
+                "android.resource://" + getPackageName() + "/drawable/my_sign", "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24",
+                "#일기 #일상", 1);
+
+        dbHelper.insert_content("2018년 12월 29일 (토)", 1, 1,"<br>duhsdf</br>");
+        dbHelper.insert_content("2018년 12월 29일 (토)", 2, 1,"duhsdf");
+        */
+        mainList = dbHelper.getResult_main();
+
+        mAdapter = new MainContentDataAdapter(this, mainList, recyclerView);
 
         setupRecyclerView();
     }
