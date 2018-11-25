@@ -13,15 +13,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.journaldev.navigationviewexpandablelistview.Adapter.EditorAdapter;
+import com.journaldev.navigationviewexpandablelistview.Adapter.MainContentDataAdapter;
 import com.journaldev.navigationviewexpandablelistview.Model.EditorModel;
+import com.journaldev.navigationviewexpandablelistview.Model.MainContent;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import gun0912.tedbottompicker.TedBottomPicker;
@@ -33,6 +41,10 @@ public class EditorActivity extends AppCompatActivity {
     private HorizontalScrollView mMenuView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private EditText editTitle;
+    private RadioGroup radioGroup;
+    private int checkedRadioButtonId;
+    private String image;
 
     private ArrayList<EditorModel> dataSet;
 
@@ -50,6 +62,11 @@ public class EditorActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrowlineleft_gr_3_28);
 
+        radioGroup = (RadioGroup)findViewById(R.id.radio_group);
+        editTitle = (EditText)findViewById(R.id.edit_title);
+        image = null;
+        radioGroup.check(R.id.sunny);
+
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -66,15 +83,15 @@ public class EditorActivity extends AppCompatActivity {
             dataSet = new ArrayList<>();
             dataSet.add(new EditorModel(1,""));
         }
-        else dataSet = MainActivity.dbHelper.getResult_content(intent.getStringExtra("date"));
-
+        else {
+            dataSet = MainActivity.dbHelper.getResult_content(intent.getStringExtra("date"));
+            editTitle.setText(intent.getStringExtra("title"));
+        }
 
         // specify an adapter (see also next example)
         //dataSet.add(new EditorModel(1,"123skdjhfgu3isjhdkjfhsjkdfhsk"));
         mAdapter = new EditorAdapter(mMenuView, mRecyclerView, dataSet, editorSet);
         mRecyclerView.setAdapter(mAdapter);
-
-
 
         findViewById(R.id.action_insert_image).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,14 +118,18 @@ public class EditorActivity extends AppCompatActivity {
                                         Log.d("ted", "uri.getPath(): " + uri.getPath());
                                         selectedUri = uri;
 
+                                        editorSet.get(dataSet.size()-1).getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                        editorSet.get(dataSet.size()-1).requestLayout();
+                                        /*
                                         //왜 워랩 컨텐츠하면 아예 없어지지?
                                         RichEditor editor = (RichEditor) mRecyclerView.findViewHolderForAdapterPosition(dataSet.size()-1).itemView.findViewById(R.id.editor);
                                         editor.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT; // LayoutParams: android.view.ViewGroup.LayoutParams
                                         // wv.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                                         editor.requestLayout();//It is necesary to refresh the screen
-
+                                        */
                                         dataSet.add(new EditorModel(2,uri.toString())); //마지막 줄에 삽입됨
                                         mAdapter.notifyItemInserted(dataSet.size());
+                                        if(image == null) image = uri.toString();
 
                                         dataSet.add(new EditorModel(1,"")); //마지막 줄에 삽입됨
                                         mAdapter.notifyItemInserted(dataSet.size());
@@ -175,17 +196,55 @@ public class EditorActivity extends AppCompatActivity {
         //검색 버튼을 눌렀을때 해야할 일. 이지만 액션바에서 검색 기능을 활성화 하려면 여기다가 구현하는게 아니라
         //onCreateOptionsMenu에서 해야한다
         if (id == R.id.action_done) {
-            Log.d("확인해봅시다", " 데이터 갯수 :  " + dataSet.size());
+            Date today = new Date();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 (E) HHmmss");
+            //Log.d("확인용" , android.text.Html.fromHtml(editorSet.get(0).getHtml()).toString());
+            //Log.d("확인용" , dateFormat.format(today));
             int check = 0;
-            /*
             for(RichEditor re : editorSet){
+                if(check==0){
+                    String summary = android.text.Html.fromHtml(editorSet.get(0).getHtml()).toString();
+                    summary = summary.replace(System.getProperty("line.separator"), " ");
+                    if(summary.length()>20) summary = summary.substring(0,20);
+                    checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
+                    if (checkedRadioButtonId == -1) {
+                        // No item selected
+                    }
+                    else{
+                        if(image == null){
+                            image = "android.resource://" + getPackageName() + "/drawable/img_splash";
+                        }
+                        if (checkedRadioButtonId == R.id.sunny) {
+                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_24", "tag", 0);
+                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_24", "tag", 0));
+                        }
+                        if (checkedRadioButtonId == R.id.sun_cloudy) {
+                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", "tag", 0);
+                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", "tag", 0));
+                        }
+                        if (checkedRadioButtonId == R.id.cloudy) {
+                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", "tag", 0);
+                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", "tag", 0));
+                        }
+                        if (checkedRadioButtonId == R.id.rainy) {
+                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24", "tag", 0);
+                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24", "tag", 0));
+                        }
+                        if (checkedRadioButtonId == R.id.snowy) {
+                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0);
+                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
+                        }
+                    }
+                }
                 if( re.getHtml() == null)
-                    MainActivity.dbHelper.insert_content("2018년 12월 29일 (토)", check, dataSet.get(check).getType(), dataSet.get(check).getContent());
-                else MainActivity.dbHelper.insert_content("2018년 12월 29일 (토)", check, dataSet.get(check).getType(), re.getHtml());
+                    MainActivity.dbHelper.insert_content(dateFormat.format(today), check, dataSet.get(check).getType(), dataSet.get(check).getContent());
+                else MainActivity.dbHelper.insert_content(dateFormat.format(today), check, dataSet.get(check).getType(), re.getHtml());
                 check++;
             }
-            */
-            finish();
+
+           MainActivity.mAdapter.notifyDataSetChanged();
+
+           finish();
             return true;
         }
         if (id == android.R.id.home) {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -54,9 +55,11 @@ public class MainContentDataAdapter extends RecyclerView.Adapter<MainContentData
                         if(check == 0) {
                             //웹뷰가 선택된 곳의 행동처리 (이전과 같은 곳을 클릭할 경우)
                             String date = contents.get(recyclerView.findViewHolderForAdapterPosition(previousPosition).getAdapterPosition()).getDate();
+                            String title = contents.get(recyclerView.findViewHolderForAdapterPosition(previousPosition).getAdapterPosition()).getTitle();
                             Intent intent = new Intent(context, EditorActivity.class);
                             intent.putExtra("db", "1");
                             intent.putExtra("date", date);
+                            intent.putExtra("title", title);
                             context.startActivity(intent);
                             previousPosition = getAdapterPosition();
                             check++;

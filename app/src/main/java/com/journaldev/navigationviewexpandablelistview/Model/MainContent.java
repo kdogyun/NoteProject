@@ -6,6 +6,20 @@ public class MainContent {
     //private ArrayList<String> tag;
     private int bookMark;
 
+    public MainContent(){
+
+    }
+
+    public MainContent(String date, String title, String summary, String image, String weather, String tag, int bookMark){
+        this.date = date;
+        this.title = title;
+        this.summary = summary;
+        this.image = image;
+        this.weather = weather;
+        this.tag = tag;
+        this.bookMark = bookMark;
+    }
+
     public String getDate() { return date; }
     public void setDate(String date) { this.date = date; }
 

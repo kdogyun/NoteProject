@@ -65,11 +65,9 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 mEditor.setHtml(mDataset.get(position).getContent());
                 buttonSetting(mMenuView);
 
-                if(position>=2) {
-                    RichEditor editor = (RichEditor) mRecyclerList.findViewHolderForAdapterPosition(position - 1).itemView.findViewById(R.id.editor);
-                    editor.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT; // LayoutParams: android.view.ViewGroup.LayoutParams
-                    // wv.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                    editor.requestLayout();//It is necesary to refresh the screen
+                if(position>=1) {
+                    editorSet.get(position - 1).getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    editorSet.get(position - 1).requestLayout();
                 }
                 break;
             case 2:
@@ -81,11 +79,9 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 mEditor.requestLayout();//It is necesary to refresh the screen
                 buttonSetting(mMenuView);
 
-                if(position>=2) {
-                    RichEditor editor = (RichEditor) mRecyclerList.findViewHolderForAdapterPosition(position - 1).itemView.findViewById(R.id.editor);
-                    editor.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT; // LayoutParams: android.view.ViewGroup.LayoutParams
-                    // wv.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                    editor.requestLayout();//It is necesary to refresh the screen
+                if(position>=1) {
+                    editorSet.get(position - 1).getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    editorSet.get(position - 1).requestLayout();
                 }
                 break;
         }

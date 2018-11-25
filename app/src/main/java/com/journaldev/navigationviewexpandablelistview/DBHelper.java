@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.journaldev.navigationviewexpandablelistview.Model.EditorModel;
 import com.journaldev.navigationviewexpandablelistview.Model.MainContent;
@@ -75,6 +76,17 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void delete_all() {
+        SQLiteDatabase db = getWritableDatabase();
+        // 입력한 항목과 일치하는 행 삭제
+        db.execSQL("DELETE FROM CONTENT;");
+        db.close();
+        SQLiteDatabase db1 = getWritableDatabase();
+        // 입력한 항목과 일치하는 행 삭제
+        db1.execSQL("DELETE FROM MAIN ;");
+        db1.close();
+    }
+
     public ArrayList getResult_main() {
         // 읽기가 가능하게 DB 열기
         SQLiteDatabase db = getReadableDatabase();
@@ -106,7 +118,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<EditorModel> arrayList = new ArrayList<>();
 
         // DB에 있는 데이터를 쉽게 처리하기 위해 Cursor를 사용하여 테이블에 있는 모든 데이터 출력
-        Cursor cursor = db.rawQuery("SELECT type, content FROM CONTENT WHERE '" + date + "' ORDER BY position ASC", null);
+        Cursor cursor = db.rawQuery("SELECT type, content FROM CONTENT WHERE date = '" + date + "' ORDER BY position ASC", null);
         while (cursor.moveToNext()) {
             EditorModel em = new EditorModel();
             em.setType(cursor.getInt(0));

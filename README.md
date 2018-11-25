@@ -16,7 +16,9 @@
 
 7. add DB_helper (SQLite) // 2018-11-21
 
-   ​	Can't use dynamic insert. Just use fixed data in db.
+   ​	~~Can't use dynamic insert. Just use fixed data in db.~~
+
+   ​	Can use dynamic insert, but there are some errors. (I'll fix it.)
 
 
 #### Reference

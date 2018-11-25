@@ -51,10 +51,11 @@ public class MainActivity extends AppCompatActivity
     ActionBar actionBar = null;
 
     public static Drawable onBookMark, offBookMark;
-    private MainContentDataAdapter mAdapter;
-    private RecyclerView recyclerView;
-    ArrayList<MainContent> mainList = new ArrayList<>();
+    static RecyclerView recyclerView;
+    static MainContentDataAdapter mAdapter;
+    static ArrayList<MainContent> mainList = new ArrayList<>();
     SwipeController swipeController = null;
+    static Context context;
 
     public static DBHelper dbHelper;
 
@@ -110,17 +111,9 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
 
         dbHelper = new DBHelper(this, "Note.db", null, 1);
-        /*
-        dbHelper.insert_main("2018년 12월 29일 (토)", "나의 생일날", "오늘은 내 생일이다. 정말 많은 친..",
-                "android.resource://" + getPackageName() + "/drawable/my_sign", "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24",
-                "#일기 #일상", 1);
-
-        dbHelper.insert_content("2018년 12월 29일 (토)", 1, 1,"<br>duhsdf</br>");
-        dbHelper.insert_content("2018년 12월 29일 (토)", 2, 1,"duhsdf");
-        */
         mainList = dbHelper.getResult_main();
-
         mAdapter = new MainContentDataAdapter(this, mainList, recyclerView);
+        context = this;
 
         setupRecyclerView();
     }
