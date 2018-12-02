@@ -217,22 +217,27 @@ public class EditorActivity extends AppCompatActivity {
                         if (checkedRadioButtonId == R.id.sunny) {
                             MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_24", "tag", 0);
                             MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_24", "tag", 0));
+                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
                         }
                         if (checkedRadioButtonId == R.id.sun_cloudy) {
                             MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", "tag", 0);
                             MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", "tag", 0));
+                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
                         }
                         if (checkedRadioButtonId == R.id.cloudy) {
                             MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", "tag", 0);
                             MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", "tag", 0));
+                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
                         }
                         if (checkedRadioButtonId == R.id.rainy) {
                             MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24", "tag", 0);
                             MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24", "tag", 0));
+                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
                         }
                         if (checkedRadioButtonId == R.id.snowy) {
                             MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0);
                             MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
+                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
                         }
                     }
                 }

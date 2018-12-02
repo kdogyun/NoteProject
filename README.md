@@ -14,11 +14,11 @@
 
 6. add Design image //  2018-11-18
 
-7. add DB_helper (SQLite) // 2018-11-21
+7. add DB_helper (SQLite)
 
-   ​	~~Can't use dynamic insert. Just use fixed data in db.~~
+   ​	~~Can't use dynamic insert. Just use fixed data in db.~~ // 2018-11-21
 
-   ​	Can use dynamic insert, but there are some errors. (I'll fix it.)
+   ​	Can use dynamic insert, but there are some errors. (I'll fix it.) // 2018-11-25
 
 
 #### Reference

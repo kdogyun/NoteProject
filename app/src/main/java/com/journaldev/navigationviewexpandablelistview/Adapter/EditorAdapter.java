@@ -220,20 +220,6 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
         });
 
-        view.findViewById(R.id.action_subscript).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setSubscript();
-            }
-        });
-
-        view.findViewById(R.id.action_superscript).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setSuperscript();
-            }
-        });
-
         view.findViewById(R.id.action_strikethrough).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,58 +231,6 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             @Override
             public void onClick(View v) {
                 mEditor.setUnderline();
-            }
-        });
-
-        view.findViewById(R.id.action_heading1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setHeading(1);
-            }
-        });
-
-        view.findViewById(R.id.action_heading2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setHeading(2);
-            }
-        });
-
-        view.findViewById(R.id.action_heading3).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setHeading(3);
-            }
-        });
-
-        view.findViewById(R.id.action_heading4).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setHeading(4);
-            }
-        });
-
-        view.findViewById(R.id.action_heading5).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setHeading(5);
-            }
-        });
-
-        view.findViewById(R.id.action_heading6).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setHeading(6);
-            }
-        });
-
-        view.findViewById(R.id.action_txt_color).setOnClickListener(new View.OnClickListener() {
-            private boolean isChanged;
-
-            @Override
-            public void onClick(View v) {
-                mEditor.setTextColor(isChanged ? Color.BLACK : Color.RED);
-                isChanged = !isChanged;
             }
         });
 
@@ -324,58 +258,17 @@ public class EditorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
         });
 
-        view.findViewById(R.id.action_align_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setAlignLeft();
-            }
-        });
-
-        view.findViewById(R.id.action_align_center).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setAlignCenter();
-            }
-        });
-
-        view.findViewById(R.id.action_align_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setAlignRight();
-            }
-        });
-
-        view.findViewById(R.id.action_blockquote).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditor.setBlockquote();
-            }
-        });
-
         view.findViewById(R.id.action_insert_bullets).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mEditor.setBullets();
+                mEditor.setBullets();
             }
         });
 
         view.findViewById(R.id.action_insert_numbers).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mEditor.setNumbers();
-            }
-        });
-
-        view.findViewById(R.id.action_insert_link).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //mEditor.insertLink("https://github.com/wasabeef", "wasabeef");
-            }
-        });
-        view.findViewById(R.id.action_insert_checkbox).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //mEditor.insertTodo();
+                mEditor.setNumbers();
             }
         });
     }

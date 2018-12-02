@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +33,7 @@ import com.journaldev.navigationviewexpandablelistview.Adapter.ExpandableListAda
 import com.journaldev.navigationviewexpandablelistview.Adapter.MainContentDataAdapter;
 import com.journaldev.navigationviewexpandablelistview.Model.MainContent;
 import com.journaldev.navigationviewexpandablelistview.Model.MenuModel;
+import com.journaldev.navigationviewexpandablelistview.Model.StorageModel;
 import com.journaldev.navigationviewexpandablelistview.Swipe.SwipeController;
 import com.journaldev.navigationviewexpandablelistview.Swipe.SwipeControllerActions;
 
@@ -53,7 +55,10 @@ public class MainActivity extends AppCompatActivity
     public static Drawable onBookMark, offBookMark;
     static RecyclerView recyclerView;
     static MainContentDataAdapter mAdapter;
+    static ArrayList<MainContent> allList = new ArrayList<>();
     static ArrayList<MainContent> mainList = new ArrayList<>();
+    static ArrayList<MainContent> trashList = new ArrayList<>();
+    ArrayList<StorageModel> storageList = new ArrayList<>();
     SwipeController swipeController = null;
     static Context context;
 
@@ -63,6 +68,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        dbHelper = new DBHelper(this, "Note.db", null, 1);
+        allList = dbHelper.getResult_main();
+        mainList = dbHelper.getResult_main();
+        storageList = dbHelper.getResult_storage();
 
         View view = getWindow().getDecorView();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -109,9 +119,6 @@ public class MainActivity extends AppCompatActivity
         onBookMark = getResources().getDrawable(R.drawable.ic_booskmark_blue_32);
 
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
-
-        dbHelper = new DBHelper(this, "Note.db", null, 1);
-        mainList = dbHelper.getResult_main();
         mAdapter = new MainContentDataAdapter(this, mainList, recyclerView);
         context = this;
 
@@ -208,42 +215,31 @@ public class MainActivity extends AppCompatActivity
 
     private void prepareMenuData() {
 
-        MenuModel menuModel = new MenuModel("Android WebView Tutorial", true, false, "https://www.journaldev.com/9333/android-webview-example-tutorial"); //Menu of Android Tutorial. No sub menus
-        headerList.add(menuModel);
+        MenuModel menuModel, childModel;
+        List<MenuModel> childModelsList;
 
-        if (!menuModel.hasChildren) {
-            childList.put(menuModel, null);
-        }
+        for( StorageModel sm : storageList ){
+            if(sm.getChild().size()>0) {
+                menuModel = new MenuModel(sm.getHeader(), true, true, sm.getHeader());
+                headerList.add(menuModel);
 
-        menuModel = new MenuModel("Java Tutorials", true, true, ""); //Menu of Java Tutorials
-        headerList.add(menuModel);
-        List<MenuModel> childModelsList = new ArrayList<>();
-        MenuModel childModel = new MenuModel("Core Java Tutorial", false, false, "https://www.journaldev.com/7153/core-java-tutorial");
-        childModelsList.add(childModel);
+                childModelsList = new ArrayList<>();
+                for(String str : sm.getChild()){
+                    childModel = new MenuModel(str, false, false, str);
+                    childModelsList.add(childModel);
+                }
 
-        childModel = new MenuModel("Java FileInputStream", false, false, "https://www.journaldev.com/19187/java-fileinputstream");
-        childModelsList.add(childModel);
+                if (menuModel.hasChildren) {
+                    childList.put(menuModel, childModelsList);
+                }
+            } else {
+                menuModel = new MenuModel(sm.getHeader(), true, false, sm.getHeader());
+                headerList.add(menuModel);
 
-        childModel = new MenuModel("Java FileReader", false, false, "https://www.journaldev.com/19115/java-filereader");
-        childModelsList.add(childModel);
-
-
-        if (menuModel.hasChildren) {
-            Log.d("API123","here");
-            childList.put(menuModel, childModelsList);
-        }
-
-        childModelsList = new ArrayList<>();
-        menuModel = new MenuModel("Python Tutorials", true, true, ""); //Menu of Python Tutorials
-        headerList.add(menuModel);
-        childModel = new MenuModel("Python AST – Abstract Syntax Tree", false, false, "https://www.journaldev.com/19243/python-ast-abstract-syntax-tree");
-        childModelsList.add(childModel);
-
-        childModel = new MenuModel("Python Fractions", false, false, "https://www.journaldev.com/19226/python-fractions");
-        childModelsList.add(childModel);
-
-        if (menuModel.hasChildren) {
-            childList.put(menuModel, childModelsList);
+                if (!menuModel.hasChildren) {
+                    childList.put(menuModel, null);
+                }
+            }
         }
     }
 
@@ -251,15 +247,23 @@ public class MainActivity extends AppCompatActivity
 
         expandableListAdapter = new ExpandableListAdapter(this, headerList, childList);
         expandableListView.setAdapter(expandableListAdapter);
-/*
+
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
 
                 if (headerList.get(groupPosition).isGroup) {
                     if (!headerList.get(groupPosition).hasChildren) {
-                        WebView webView = findViewById(R.id.webView);
-                        webView.loadUrl(headerList.get(groupPosition).url);
+                        if (groupPosition == 0){
+                            addAll();
+                        } else if(groupPosition == 1){
+                            addBookMark();
+                        } else if(groupPosition == 2){
+                            addTrash();
+                        } else {
+                            addGroup(headerList.get(groupPosition).url);
+                        }
+                        mAdapter.notifyDataSetChanged();
                         onBackPressed();
                     }
                 }
@@ -275,8 +279,8 @@ public class MainActivity extends AppCompatActivity
                 if (childList.get(headerList.get(groupPosition)) != null) {
                     MenuModel model = childList.get(headerList.get(groupPosition)).get(childPosition);
                     if (model.url.length() > 0) {
-                        WebView webView = findViewById(R.id.webView);
-                        webView.loadUrl(model.url);
+                        addChild(model.url);
+                        mAdapter.notifyDataSetChanged();
                         onBackPressed();
                     }
                 }
@@ -284,7 +288,7 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         });
-        */
+
     }
 
     private void setupRecyclerView() {
@@ -294,6 +298,7 @@ public class MainActivity extends AppCompatActivity
         swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
             public void onRightClicked(int position) {
+                trashList.add(mAdapter.contents.get(position));
                 mAdapter.contents.remove(position);
                 mAdapter.notifyItemRemoved(position);
                 mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
@@ -301,6 +306,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onLeftClicked(int position) {
+                trashList.add(mAdapter.contents.get(position));
                 mAdapter.contents.remove(position);
                 mAdapter.notifyItemRemoved(position);
                 mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
@@ -316,5 +322,46 @@ public class MainActivity extends AppCompatActivity
                 swipeController.onDraw(c);
             }
         });
+    }
+
+    private void addAll(){
+        mainList.clear();
+        for(MainContent mc : allList){
+            mainList.add(mc);
+        }
+    }
+
+    private void addBookMark(){
+        mainList.clear();
+        for(MainContent mc : allList){
+            if(mc.getBookMark()==1){
+                mainList.add(mc);
+            }
+        }
+    }
+
+    private void addTrash(){
+        mainList.clear();
+        for(MainContent mc : trashList){
+            mainList.add(mc);
+        }
+    }
+
+    private void addGroup(String folder){
+        mainList.clear();
+        for(MainContent mc : trashList){
+            if(mc.getTag().split("/")[0].equals(folder)) {
+                mainList.add(mc);
+            }
+        }
+    }
+
+    private void addChild(String folder){
+        mainList.clear();
+        for(MainContent mc : trashList){
+            if(mc.getTag().split("/")[1].equals(folder)) {
+                mainList.add(mc);
+            }
+        }
     }
 }

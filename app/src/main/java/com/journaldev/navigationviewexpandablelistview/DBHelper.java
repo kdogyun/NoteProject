@@ -4,10 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.icu.text.LocaleDisplayNames;
 import android.util.Log;
 
 import com.journaldev.navigationviewexpandablelistview.Model.EditorModel;
 import com.journaldev.navigationviewexpandablelistview.Model.MainContent;
+import com.journaldev.navigationviewexpandablelistview.Model.StorageModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //db.execSQL("CREATE TABLE MENU (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, cost INTEGER);");
         db.execSQL("CREATE TABLE MAIN (date TEXT, title TEXT, summary TEXT, image TEXT, weather TEXT, tag TEXT, bookmark INTEGER);");
         db.execSQL("CREATE TABLE CONTENT (date TEXT, position INTEGER, type INTEGER, content TEXT);");
+        db.execSQL("CREATE TABLE STORAGE (header TEXT, child TEXT);");
     }
 
     // DB 업그레이드를 위해 버전이 변경될 때 호출되는 함수
@@ -52,6 +55,14 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         // DB에 입력한 값으로 행 추가
         db.execSQL("INSERT INTO CONTENT VALUES('" + date + "', " + position + ", " + type + ", '" + content + "');");
+        db.close();
+    }
+
+    public void insert_storage(String header, String child) {
+        // 읽고 쓰기가 가능하게 DB 열기
+        SQLiteDatabase db = getWritableDatabase();
+        // DB에 입력한 값으로 행 추가
+        db.execSQL("INSERT INTO STORAGE VALUES('" + header + "', '" + child + "');");
         db.close();
     }
 /*
@@ -125,6 +136,42 @@ public class DBHelper extends SQLiteOpenHelper {
             em.setContent(cursor.getString(1));
             arrayList.add(em);
         }
+
+        cursor.close();
+        db.close();
+
+        return arrayList;
+    }
+
+    public ArrayList getResult_storage() {
+        // 읽기가 가능하게 DB 열기
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<StorageModel> arrayList = new ArrayList<>();
+
+        // DB에 있는 데이터를 쉽게 처리하기 위해 Cursor를 사용하여 테이블에 있는 모든 데이터 출력
+        Cursor cursor = db.rawQuery("SELECT * FROM STORAGE", null);
+        String header = null;
+        StorageModel sm = new StorageModel();
+        while (cursor.moveToNext()) {
+            if(header == null){
+                header = cursor.getString(0);
+                sm.setHeader(cursor.getString(0));
+            }
+            if(cursor.getString(0).equals(header)){
+                if(!cursor.getString(1).equals("null")) {
+                    sm.addChild(cursor.getString(1));
+                }
+            } else {
+                arrayList.add(sm);
+                sm = new StorageModel();
+                header = cursor.getString(0);
+                sm.setHeader(cursor.getString(0));
+                if(!cursor.getString(1).equals("null")) {
+                    sm.addChild(cursor.getString(1));
+                }
+            }
+        }
+        arrayList.add(sm);
 
         cursor.close();
         db.close();
