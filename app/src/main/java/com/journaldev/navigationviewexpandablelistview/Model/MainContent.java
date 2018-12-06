@@ -4,13 +4,13 @@ public class MainContent {
 
     private String date, title, summary, image, weather, tag;
     //private ArrayList<String> tag;
-    private int bookMark;
+    private int bookMark, trash;
 
     public MainContent(){
 
     }
 
-    public MainContent(String date, String title, String summary, String image, String weather, String tag, int bookMark){
+    public MainContent(String date, String title, String summary, String image, String weather, String tag, int bookMark, int trash){
         this.date = date;
         this.title = title;
         this.summary = summary;
@@ -18,6 +18,7 @@ public class MainContent {
         this.weather = weather;
         this.tag = tag;
         this.bookMark = bookMark;
+        this.trash = trash;
     }
 
     public String getDate() { return date; }
@@ -40,4 +41,7 @@ public class MainContent {
 
     public int getBookMark() { return bookMark; }
     public void setBookMark(int bookMark) { this.bookMark = bookMark; }
+
+    public int getTrash() { return trash; }
+    public void setTrash(int trash) { this.trash = trash; }
 }

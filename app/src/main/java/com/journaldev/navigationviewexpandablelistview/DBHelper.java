@@ -31,9 +31,15 @@ public class DBHelper extends SQLiteOpenHelper {
         /* 이름은 MONEYBOOK이고, 자동으로 값이 증가하는 _id 정수형 기본키 컬럼과
         item 문자열 컬럼, price 정수형 컬럼, create_at 문자열 컬럼으로 구성된 테이블을 생성. */
         //db.execSQL("CREATE TABLE MENU (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, cost INTEGER);");
-        db.execSQL("CREATE TABLE MAIN (date TEXT, title TEXT, summary TEXT, image TEXT, weather TEXT, tag TEXT, bookmark INTEGER);");
+        db.execSQL("CREATE TABLE MAIN (date TEXT, title TEXT, summary TEXT, image TEXT, weather TEXT, tag TEXT, bookmark INTEGER, trash INTEGER);");
         db.execSQL("CREATE TABLE CONTENT (date TEXT, position INTEGER, type INTEGER, content TEXT);");
         db.execSQL("CREATE TABLE STORAGE (header TEXT, child TEXT);");
+
+        db.execSQL("INSERT INTO STORAGE VALUES('일기', '');");
+        db.execSQL("INSERT INTO STORAGE VALUES('북마크', '');");
+        db.execSQL("INSERT INTO STORAGE VALUES('휴지통', '');");
+        db.execSQL("INSERT INTO STORAGE VALUES(' ', '');"   );
+        db.execSQL("INSERT INTO STORAGE VALUES('미분류', '');");
     }
 
     // DB 업그레이드를 위해 버전이 변경될 때 호출되는 함수
@@ -42,11 +48,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void insert_main(String date, String title, String summary, String image, String weather, String tag, int bookmark) {
+    public void insert_main(String date, String title, String summary, String image, String weather, String tag, int bookmark, int trash) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         // DB에 입력한 값으로 행 추가
-        db.execSQL("INSERT INTO MAIN VALUES('" + date + "', '" + title + "', '" + summary + "', '" + image + "', '" + weather + "', '" + tag + "', " + bookmark + ");");
+        db.execSQL("INSERT INTO MAIN VALUES('" + date + "', '" + title + "', '" + summary + "', '" + image + "', '" + weather + "', '" + tag + "', " + bookmark + ", " + trash + ");");
         db.close();
     }
 
@@ -65,14 +71,29 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO STORAGE VALUES('" + header + "', '" + child + "');");
         db.close();
     }
-/*
-    public void update(String name, int cost) {
+
+    public void update_trash(String date, int trash) {
         SQLiteDatabase db = getWritableDatabase();
         // 입력한 항목과 일치하는 행의 가격 정보 수정
-        db.execSQL("UPDATE MENU SET cost=" + cost + " WHERE name='" + name + "';");
+        db.execSQL("UPDATE MAIN SET trash=" + trash + " WHERE date='" + date + "';");
         db.close();
     }
-*/
+
+    public void update_bookMark(String date, int bookMark) {
+        SQLiteDatabase db = getWritableDatabase();
+        // 입력한 항목과 일치하는 행의 가격 정보 수정
+        db.execSQL("UPDATE MAIN SET bookmark=" + bookMark + " WHERE date='" + date + "';");
+        db.close();
+    }
+
+    public void update_storage(String header, String child) {
+        SQLiteDatabase db = getWritableDatabase();
+        // 입력한 항목과 일치하는 행의 가격 정보 수정
+        if(child.equals("")) db.execSQL("UPDATE MAIN SET tag='미분류'  WHERE tag='" + header + "';");
+        else db.execSQL("UPDATE MAIN SET tag='미분류'  WHERE tag='" + header + "/" + child + "';");
+        db.close();
+    }
+
     public void delete_main(String date) {
         SQLiteDatabase db = getWritableDatabase();
         // 입력한 항목과 일치하는 행 삭제
@@ -84,6 +105,13 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         // 입력한 항목과 일치하는 행 삭제
         db.execSQL("DELETE FROM CONTENT WHERE date='" + date + "';");
+        db.close();
+    }
+
+    public void delete_storage(String header, String child) {
+        SQLiteDatabase db = getWritableDatabase();
+        // 입력한 항목과 일치하는 행 삭제
+        db.execSQL("DELETE FROM STORAGE WHERE header='" + header + "' and child='" + child + "';");
         db.close();
     }
 
@@ -114,6 +142,7 @@ public class DBHelper extends SQLiteOpenHelper {
             mainContent.setWeather(cursor.getString(4));
             mainContent.setTag(cursor.getString(5));
             mainContent.setBookMark(cursor.getInt(6));
+            mainContent.setTrash(cursor.getInt(7));
             arrayList.add(mainContent);
         }
 
@@ -158,7 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 sm.setHeader(cursor.getString(0));
             }
             if(cursor.getString(0).equals(header)){
-                if(!cursor.getString(1).equals("null")) {
+                if(!(cursor.getString(1).equals("null") || cursor.getString(1).equals(""))) {
                     sm.addChild(cursor.getString(1));
                 }
             } else {
@@ -166,12 +195,33 @@ public class DBHelper extends SQLiteOpenHelper {
                 sm = new StorageModel();
                 header = cursor.getString(0);
                 sm.setHeader(cursor.getString(0));
-                if(!cursor.getString(1).equals("null")) {
+                if(!(cursor.getString(1).equals("null") || cursor.getString(1).equals(""))) {
                     sm.addChild(cursor.getString(1));
                 }
             }
         }
         arrayList.add(sm);
+
+        cursor.close();
+        db.close();
+
+        return arrayList;
+    }
+
+    public ArrayList getResult_storage_list() {
+        // 읽기가 가능하게 DB 열기
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        // DB에 있는 데이터를 쉽게 처리하기 위해 Cursor를 사용하여 테이블에 있는 모든 데이터 출력
+        Cursor cursor = db.rawQuery("SELECT * FROM STORAGE", null);
+        String header = null;
+        StorageModel sm = new StorageModel();
+        int check = 0;
+        while (cursor.moveToNext()) {
+            if(check>3) arrayList.add(cursor.getString(0) + "/" + cursor.getString(1));
+            check++;
+        }
 
         cursor.close();
         db.close();

@@ -1,9 +1,11 @@
 package com.journaldev.navigationviewexpandablelistview;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.RadioButton;
@@ -25,6 +29,7 @@ import com.journaldev.navigationviewexpandablelistview.Adapter.EditorAdapter;
 import com.journaldev.navigationviewexpandablelistview.Adapter.MainContentDataAdapter;
 import com.journaldev.navigationviewexpandablelistview.Model.EditorModel;
 import com.journaldev.navigationviewexpandablelistview.Model.MainContent;
+import com.journaldev.navigationviewexpandablelistview.Model.StorageModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -58,6 +63,7 @@ public class EditorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_editor);
 
         Toolbar toolbar = findViewById(R.id.toolbar_editor);
+        toolbar.setTitle("글쓰기");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrowlineleft_gr_3_28);
@@ -86,6 +92,7 @@ public class EditorActivity extends AppCompatActivity {
         else {
             dataSet = MainActivity.dbHelper.getResult_content(intent.getStringExtra("date"));
             editTitle.setText(intent.getStringExtra("title"));
+            chooseWeather(intent.getStringExtra("weather"));
         }
 
         // specify an adapter (see also next example)
@@ -173,6 +180,14 @@ public class EditorActivity extends AppCompatActivity {
 
     }
 
+    private void chooseWeather(String weather){
+        if(weather.contains("ic_weather_sunny_color_32")) radioGroup.check(R.id.sunny);
+        if(weather.contains("ic_weather_cloudy_1_color_32")) radioGroup.check(R.id.sun_cloudy);
+        if(weather.contains("ic_weather_cloudy_2_color_32")) radioGroup.check(R.id.cloudy);
+        if(weather.contains("ic_weather_rain_color_32")) radioGroup.check(R.id.rainy);
+        if(weather.contains("ic_weather_snow_color_32")) radioGroup.check(R.id.snowy);
+    }
+
 
 
     @Override
@@ -186,6 +201,10 @@ public class EditorActivity extends AppCompatActivity {
         return true;
     }
 
+    View dialogView;
+    AutoCompleteTextView storage;
+    ArrayList<String> storage_list;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -193,63 +212,118 @@ public class EditorActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        storage_list = MainActivity.dbHelper.getResult_storage_list();
+
         //검색 버튼을 눌렀을때 해야할 일. 이지만 액션바에서 검색 기능을 활성화 하려면 여기다가 구현하는게 아니라
         //onCreateOptionsMenu에서 해야한다
         if (id == R.id.action_done) {
-            Date today = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 (E) HHmmss");
-            //Log.d("확인용" , android.text.Html.fromHtml(editorSet.get(0).getHtml()).toString());
-            //Log.d("확인용" , dateFormat.format(today));
-            int check = 0;
-            for(RichEditor re : editorSet){
-                if(check==0){
-                    String summary = android.text.Html.fromHtml(editorSet.get(0).getHtml()).toString();
-                    summary = summary.replace(System.getProperty("line.separator"), " ");
-                    if(summary.length()>20) summary = summary.substring(0,20);
-                    checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
-                    if (checkedRadioButtonId == -1) {
-                        // No item selected
-                    }
-                    else{
-                        if(image == null){
-                            image = "android.resource://" + getPackageName() + "/drawable/img_splash";
-                        }
-                        if (checkedRadioButtonId == R.id.sunny) {
-                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_24", "tag", 0);
-                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_24", "tag", 0));
-                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
-                        }
-                        if (checkedRadioButtonId == R.id.sun_cloudy) {
-                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", "tag", 0);
-                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", "tag", 0));
-                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
-                        }
-                        if (checkedRadioButtonId == R.id.cloudy) {
-                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", "tag", 0);
-                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", "tag", 0));
-                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
-                        }
-                        if (checkedRadioButtonId == R.id.rainy) {
-                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24", "tag", 0);
-                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rainy_color_24", "tag", 0));
-                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
-                        }
-                        if (checkedRadioButtonId == R.id.snowy) {
-                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0);
-                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
-                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", "tag", 0));
-                        }
-                    }
-                }
-                if( re.getHtml() == null)
-                    MainActivity.dbHelper.insert_content(dateFormat.format(today), check, dataSet.get(check).getType(), dataSet.get(check).getContent());
-                else MainActivity.dbHelper.insert_content(dateFormat.format(today), check, dataSet.get(check).getType(), re.getHtml());
-                check++;
-            }
+            dialogView = (View)  View.inflate(EditorActivity.this, R.layout.dialog_layout_storage, null);
 
-           MainActivity.mAdapter.notifyDataSetChanged();
+            storage = (AutoCompleteTextView) dialogView.findViewById(R.id.dialog_storage);
+            storage.setAdapter(new ArrayAdapter<String>(EditorActivity.this, android.R.layout.simple_dropdown_item_1line,  storage_list));
 
-           finish();
+            AlertDialog.Builder dlg = new AlertDialog.Builder(EditorActivity.this)
+                    .setView(dialogView)
+                    .setTitle("저장 공간을 선택해 주세요")
+                    .setPositiveButton("저장", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Date today = new Date();
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 (E) HHmmss");
+                            //Log.d("확인용" , android.text.Html.fromHtml(editorSet.get(0).getHtml()).toString());
+                            //Log.d("확인용" , dateFormat.format(today));
+                            int check = 0;
+                            for(RichEditor re : editorSet){
+                                if(check==0){
+                                    String summary = android.text.Html.fromHtml(editorSet.get(0).getHtml()).toString();
+                                    summary = summary.replace(System.getProperty("line.separator"), " ");
+                                    if(summary.length()>20) summary = summary.substring(0,20);
+                                    checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
+                                    if (checkedRadioButtonId == -1) {
+                                        // No item selected
+                                    }
+                                    else{
+                                        if(image == null){
+                                            image = "android.resource://" + getPackageName() + "/drawable/img_splash";
+                                        }
+                                        if (checkedRadioButtonId == R.id.sunny) {
+                                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_32", storage.getText().toString(), 0, 0);
+                                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_32", storage.getText().toString(), 0, 0));
+                                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_sunny_color_32", storage.getText().toString(), 0, 0));
+                                        }
+                                        if (checkedRadioButtonId == R.id.sun_cloudy) {
+                                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", storage.getText().toString(), 0, 0);
+                                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", storage.getText().toString(), 0, 0));
+                                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_1_color_32", storage.getText().toString(), 0, 0));
+                                        }
+                                        if (checkedRadioButtonId == R.id.cloudy) {
+                                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", storage.getText().toString(), 0, 0);
+                                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", storage.getText().toString(), 0, 0));
+                                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_cloudy_2_color_32", storage.getText().toString(), 0, 0));
+                                        }
+                                        if (checkedRadioButtonId == R.id.rainy) {
+                                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rain_color_32", storage.getText().toString(), 0, 0);
+                                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rain_color_32", storage.getText().toString(), 0, 0));
+                                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_rain_color_32", storage.getText().toString(), 0, 0));
+                                        }
+                                        if (checkedRadioButtonId == R.id.snowy) {
+                                            MainActivity.dbHelper.insert_main(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", storage.getText().toString(), 0, 0);
+                                            MainActivity.mainList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", storage.getText().toString(), 0, 0));
+                                            MainActivity.allList.add(0, new MainContent(dateFormat.format(today), editTitle.getText().toString(), summary, image, "android.resource://" + getPackageName() + "/drawable/ic_weather_snow_color_32", storage.getText().toString(), 0, 0));
+                                        }
+                                    }
+                                }
+                                if( re.getHtml() == null)
+                                    MainActivity.dbHelper.insert_content(dateFormat.format(today), check, dataSet.get(check).getType(), dataSet.get(check).getContent());
+                                else MainActivity.dbHelper.insert_content(dateFormat.format(today), check, dataSet.get(check).getType(), re.getHtml());
+                                check++;
+                            }
+
+                            int i = 0;
+                            for(String sl : storage_list){
+                                String sls = sl;
+                                //입력한 저장소가 /를 가지고 있지않을 경우
+                                if(!storage.getText().toString().contains("/")) {
+                                    //목록에서 /를 제거한 값 가져오기
+                                    if (sl.contains("/")) sls = sl.split("/")[0];
+                                    //그래서 같은 값이 존재하면 1증가
+                                    if (sls.contains(storage.getText().toString())) i++;
+                                } else {
+                                    //입력한 저장소가 /를 가지고 있으면...
+                                    //전체가 똑같은 목록이 있는지 확인후 있으면 1 증가
+                                    if (sls.contains(storage.getText().toString())) i++;
+                                    //없으면 아무것도 안함.
+                                    else{
+
+                                    }
+                                }
+                            }
+                            //i=0이면 기존 저장소 목록에 없다는 뜻
+                            if( i == 0){
+                                String header, child;
+                                //입력한 저장소가 / 가 있으면 나눠서 저장
+                                if(storage.getText().toString().contains("/")){
+                                    header = storage.getText().toString().split("/")[0];
+                                    child = storage.getText().toString().split("/")[1];
+                                    //없으면 그냥 저장
+                                } else {
+                                    header = storage.getText().toString();
+                                    child = "";
+                                }
+                                MainActivity.dbHelper.insert_storage(header, child);
+                                MainActivity.storageList = MainActivity.dbHelper.getResult_storage();
+                                MainActivity.prepareMenuData();
+                                MainActivity.expandableListAdapter.notifyDataSetChanged();
+                            } else {
+                                //기존 저장소에 목록이 있으면 어떻게 할지 구현... 할게없네
+                            }
+                            MainActivity.mAdapter.notifyDataSetChanged();
+
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("취소",null);
+            dlg.show();
             return true;
         }
         if (id == android.R.id.home) {

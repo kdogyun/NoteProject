@@ -22,10 +22,10 @@
 
             <ImageView
                 android:id="@+id/row_weather"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_centerInParent="true"
-                android:src="@drawable/ic_weather_rainy_color_24" />
+                android:src="@drawable/ic_weather_rain_color_32" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -38,6 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:layout_marginTop="6dp"
                 tools:srcCompat="@tools:sample/backgrounds/scenic" />
         </RelativeLayout>
 
@@ -79,12 +80,14 @@
             android:layout_weight="11"
             android:layout_height="match_parent">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/row_bookmark"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentTop="true"
+                android:layout_width="16dp"
+                android:layout_height="25dp"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="0dp"
                 android:src="@drawable/ic_booskmark_blue_32" />
         </RelativeLayout>
     </LinearLayout>

@@ -4,13 +4,18 @@
 
     <item android:id="@+id/action_calendar"
         android:title="Search"
-        android:icon="@drawable/ic_menu_gallery"
+        android:icon="@android:drawable/ic_menu_my_calendar"
         app:showAsAction="always"/>
 
-    <item android:id="@+id/action_search"
-        android:title="Search"
-        android:icon="@drawable/ic_search_gr_3_28"
-        app:showAsAction="always"
-        app:actionViewClass="android.support.v7.widget.SearchView"/>
-    <!--단순히 이미지만 추가하는게 아니라 진짜 검색창이 되도록 하는것입니다.-->
+    <item android:id="@+id/action_folder"
+        android:title="Forder"
+        android:icon="@android:drawable/ic_menu_manage"
+        app:showAsAction="always"/>
+    <!--
+        <item android:id="@+id/action_search"
+            android:title="Search"
+            android:icon="@drawable/ic_search_gr_3_28"
+            app:showAsAction="always"
+            app:actionViewClass="android.support.v7.widget.SearchView"/>-->
+        <!--단순히 이미지만 추가하는게 아니라 진짜 검색창이 되도록 하는것입니다.-->
 </menu>
